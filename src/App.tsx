@@ -16,6 +16,8 @@ import Teach from "@/pages/Teach";
 import NewCourse from "@/pages/NewCourse";
 import ManageCourse from "@/pages/ManageCourse";
 import Profile from "@/pages/Profile";
+import Events from "@/pages/Events";
+import EventDetail from "@/pages/EventDetail";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +40,8 @@ export default function App() {
                   <Route path="/teach" element={<ProtectedRoute><Teach /></ProtectedRoute>} />
                   <Route path="/teach/new" element={<ProtectedRoute><NewCourse /></ProtectedRoute>} />
                   <Route path="/teach/course/:id" element={<ProtectedRoute><ManageCourse /></ProtectedRoute>} />
+                  <Route path="/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
+                  <Route path="/events/:id" element={<ProtectedRoute><EventDetail /></ProtectedRoute>} />
                   <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
