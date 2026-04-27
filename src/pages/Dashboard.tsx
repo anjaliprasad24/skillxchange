@@ -2,76 +2,140 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, GraduationCap, Coins, TrendingUp } from "lucide-react";
+import { ArrowRight, BookOpen, GraduationCap, Coins, TrendingUp, Calendar, Sparkles } from "lucide-react";
 
 interface Txn { id: string; amount: number; type: string; reason: string; date: string; }
+interface Enrollment {
+  id: string;
+  status: string;
+  course_sessions: {
+    id: string;
+    start_date: string;
+    mode: string;
+    courses: { id: string; title: string; credit_cost: number; skills: { name: string } | null } | null;
+  } | null;
+}
 
 export default function Dashboard() {
   const { profile, user } = useAuth();
   const [txns, setTxns] = useState<Txn[]>([]);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [counts, setCounts] = useState({ teaching: 0, enrolled: 0 });
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: t }, { count: teachCount }, { count: enrollCount }] = await Promise.all([
+      const [{ data: t }, { data: en }, { count: teachCount }] = await Promise.all([
         supabase.from("credit_transactions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(8),
+        supabase
+          .from("enrollments")
+          .select("id, status, course_sessions(id, start_date, mode, courses(id, title, credit_cost, skills(name)))")
+          .eq("student_id", user.id)
+          .order("enroll_date", { ascending: false }),
         supabase.from("course_sessions").select("id", { count: "exact", head: true }).eq("mentor_id", user.id),
-        supabase.from("enrollments").select("id", { count: "exact", head: true }).eq("student_id", user.id),
       ]);
       if (t) setTxns(t as Txn[]);
-      setCounts({ teaching: teachCount ?? 0, enrolled: enrollCount ?? 0 });
+      if (en) setEnrollments(en as any);
+      setCounts({ teaching: teachCount ?? 0, enrolled: en?.length ?? 0 });
     })();
   }, [user]);
 
   return (
-    <div className="container py-12 max-w-6xl">
-      <div className="mb-12">
-        <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-2">
-          Welcome back
-        </p>
-        <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight">
-          Hey, {profile?.name?.split(" ")[0] ?? "there"} 👋
-        </h1>
+    <div className="container py-12 md:py-16 max-w-7xl">
+      {/* Header */}
+      <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-widest text-primary mb-3">Welcome back</p>
+          <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tighter leading-[0.95]">
+            Hey, <span className="font-serif-italic font-normal text-primary">{profile?.name?.split(" ")[0] ?? "there"}</span>
+          </h1>
+        </div>
+        <div className="flex gap-3">
+          <Link to="/courses" className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-smooth shadow-pop">
+            Browse courses <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link to="/teach" className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-card border border-foreground/10 text-foreground text-sm font-semibold hover:bg-muted transition-smooth">
+            Teach
+          </Link>
+        </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-border rounded-lg overflow-hidden mb-12 card-elevated">
-        <Stat icon={Coins} label="Credit balance" value={profile?.credits ?? 0} accent />
-        <Stat icon={TrendingUp} label="Reputation" value={(profile?.reputation ?? 0).toFixed(1)} suffix="/5" />
-        <Stat icon={BookOpen} label="Enrolled in" value={counts.enrolled} />
-        <Stat icon={GraduationCap} label="Teaching" value={counts.teaching} />
+      {/* Stats — colored blocks */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+        <Stat icon={Coins} label="Credit balance" value={profile?.credits ?? 0} bg="bg-primary text-primary-foreground" />
+        <Stat icon={TrendingUp} label="Reputation" value={(profile?.reputation ?? 0).toFixed(1)} suffix="/5" bg="bg-mint" />
+        <Stat icon={BookOpen} label="Enrolled in" value={counts.enrolled} bg="bg-sunny" />
+        <Stat icon={GraduationCap} label="Teaching" value={counts.teaching} bg="bg-lilac" />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Quick actions */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-lg border border-border bg-card p-6">
-            <h2 className="font-display text-xl font-semibold mb-4">Pick up where you left off</h2>
-            <div className="grid sm:grid-cols-2 gap-3">
-              <ActionCard to="/courses" title="Browse courses" desc="Find a peer to learn from" />
-              <ActionCard to="/teach" title="Create a course" desc="Earn credits teaching" />
-              <ActionCard to="/profile" title="Set availability" desc="Tell people when you're free" />
-              <ActionCard to="/courses" title="Find by skill" desc="Python, design, music…" />
-            </div>
+        {/* My enrollments */}
+        <div className="lg:col-span-2 rounded-3xl bg-card p-7 shadow-card">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-display text-2xl font-bold">My enrollments</h2>
+            <Link to="/courses" className="text-sm text-muted-foreground hover:text-foreground transition-smooth font-mono">
+              + Add another
+            </Link>
           </div>
+
+          {enrollments.length === 0 ? (
+            <div className="rounded-2xl bg-background p-8 text-center">
+              <Sparkles className="w-8 h-8 text-primary mx-auto mb-3" />
+              <p className="text-muted-foreground mb-4">You haven't joined any sessions yet.</p>
+              <Link to="/courses" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                Find your first course <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          ) : (
+            <ul className="divide-y divide-border">
+              {enrollments.map((e) => {
+                const c = e.course_sessions?.courses;
+                if (!c) return null;
+                return (
+                  <li key={e.id}>
+                    <Link to={`/courses/${c.id}`} className="flex items-center justify-between py-4 group">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          {c.skills?.name && (
+                            <span className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full bg-muted text-foreground/70">
+                              {c.skills.name}
+                            </span>
+                          )}
+                          <span className="text-[10px] font-mono uppercase tracking-widest text-mint">{e.status}</span>
+                        </div>
+                        <h3 className="font-semibold truncate group-hover:text-primary transition-smooth">{c.title}</h3>
+                        {e.course_sessions?.start_date && (
+                          <p className="text-xs text-muted-foreground font-mono mt-1 flex items-center gap-1.5">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(e.course_sessions.start_date).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}
+                            <span className="text-foreground/30">·</span>
+                            {e.course_sessions.mode}
+                          </p>
+                        )}
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-smooth" />
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
 
         {/* Transactions */}
-        <div className="rounded-lg border border-border bg-card p-6">
-          <h2 className="font-display text-xl font-semibold mb-4">Recent activity</h2>
+        <div className="rounded-3xl bg-card p-7 shadow-card">
+          <h2 className="font-display text-2xl font-bold mb-5">Activity</h2>
           {txns.length === 0 ? (
             <p className="text-sm text-muted-foreground">No activity yet.</p>
           ) : (
             <ul className="space-y-3">
               {txns.map((t) => (
                 <li key={t.id} className="flex items-start justify-between text-sm pb-3 border-b border-border/50 last:border-0">
-                  <div>
-                    <p className="text-foreground">{t.reason}</p>
+                  <div className="min-w-0 pr-3">
+                    <p className="text-foreground truncate">{t.reason}</p>
                     <p className="text-xs text-muted-foreground font-mono">{t.date}</p>
                   </div>
-                  <span className={`font-mono font-semibold ${t.type === "Credit" ? "text-primary" : "text-muted-foreground"}`}>
+                  <span className={`font-mono font-bold shrink-0 ${t.type === "Credit" ? "text-mint" : "text-primary"}`}>
                     {t.type === "Credit" ? "+" : "−"}{t.amount}
                   </span>
                 </li>
@@ -84,28 +148,16 @@ export default function Dashboard() {
   );
 }
 
-function Stat({ icon: Icon, label, value, suffix, accent }: any) {
+function Stat({ icon: Icon, label, value, suffix, bg }: { icon: any; label: string; value: any; suffix?: string; bg: string }) {
   return (
-    <div className={`bg-card p-6 ${accent ? "ring-1 ring-inset ring-primary/30" : ""}`}>
-      <div className="flex items-center justify-between mb-3">
-        <Icon className={`w-4 h-4 ${accent ? "text-primary" : "text-muted-foreground"}`} />
-        <span className="text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
+    <div className={`rounded-2xl ${bg} p-6 shadow-card`}>
+      <div className="flex items-center justify-between mb-4">
+        <Icon className="w-5 h-5" />
+        <span className="text-[10px] uppercase tracking-widest opacity-80">{label}</span>
       </div>
-      <div className={`font-mono text-3xl font-bold ${accent ? "text-primary" : ""}`}>
-        {value}{suffix && <span className="text-base text-muted-foreground">{suffix}</span>}
+      <div className="font-display text-4xl md:text-5xl font-bold">
+        {value}{suffix && <span className="text-base opacity-70">{suffix}</span>}
       </div>
     </div>
-  );
-}
-
-function ActionCard({ to, title, desc }: { to: string; title: string; desc: string }) {
-  return (
-    <Link to={to} className="group rounded-md border border-border bg-background/50 p-4 transition-smooth hover:border-primary/50 hover:bg-muted/30">
-      <div className="flex items-start justify-between mb-1">
-        <h3 className="font-semibold">{title}</h3>
-        <ArrowRight className="w-4 h-4 text-muted-foreground transition-smooth group-hover:text-primary group-hover:translate-x-0.5" />
-      </div>
-      <p className="text-xs text-muted-foreground">{desc}</p>
-    </Link>
   );
 }
