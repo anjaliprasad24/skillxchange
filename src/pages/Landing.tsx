@@ -64,29 +64,23 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Live badge bottom-left */}
-          <div className="absolute bottom-8 left-4 md:left-8 flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/90 backdrop-blur text-xs font-mono uppercase tracking-widest">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" /> Live
-          </div>
         </div>
       </section>
 
-      {/* ===================== STATS STRIP — bold colored block ===================== */}
-      <section className="bg-gradient-warm py-16 md:py-20 border-b-2 border-foreground">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { v: "100", l: "Free credits at signup" },
-              { v: "0$", l: "Subscription cost" },
-              { v: "1:1", l: "Peer sessions" },
-              { v: "∞", l: "Skills to exchange" },
-            ].map((s) => (
-              <div key={s.l} className="rounded-2xl bg-background p-6 shadow-card border-2 border-foreground/10">
-                <div className="font-display text-4xl md:text-5xl font-bold text-foreground">{s.v}</div>
-                <div className="mt-1 text-sm text-foreground/70">{s.l}</div>
-              </div>
-            ))}
-          </div>
+      {/* ===================== STATS STRIP ===================== */}
+      <section className="container py-16 md:py-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { v: "100", l: "Free credits at signup" },
+            { v: "0$", l: "Subscription cost" },
+            { v: "1:1", l: "Peer sessions" },
+            { v: "∞", l: "Skills to exchange" },
+          ].map((s) => (
+            <div key={s.l} className="rounded-2xl bg-card p-6 shadow-card">
+              <div className="font-display text-4xl md:text-5xl font-bold text-foreground">{s.v}</div>
+              <div className="mt-1 text-sm text-muted-foreground">{s.l}</div>
+            </div>
+          ))}
         </div>
       </section>
 
