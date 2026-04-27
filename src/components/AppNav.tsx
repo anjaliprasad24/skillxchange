@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Sparkles, LogOut } from "lucide-react";
+import { NotificationsBell } from "@/components/NotificationsBell";
 
 export function AppNav() {
   const { user, profile, signOut } = useAuth();
@@ -13,6 +14,7 @@ export function AppNav() {
         { to: "/dashboard", label: "Dashboard" },
         { to: "/courses", label: "Browse" },
         { to: "/teach", label: "Teach" },
+        { to: "/events", label: "Events" },
         { to: "/profile", label: "Profile" },
       ]
     : [];
@@ -54,6 +56,7 @@ export function AppNav() {
                 </span>
                 <span className="text-xs text-muted-foreground uppercase tracking-wider">credits</span>
               </div>
+              <NotificationsBell />
               <Button variant="ghost" size="sm" onClick={async () => { await signOut(); navigate("/"); }}>
                 <LogOut className="w-4 h-4" />
               </Button>
