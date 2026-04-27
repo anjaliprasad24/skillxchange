@@ -1,56 +1,70 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Coins, GraduationCap, Sparkles, Star, Play, Users, Zap, ArrowUpRight } from "lucide-react";
-import heroVideo from "@/assets/hero-learning.mp4.asset.json";
+import heroVideo from "@/assets/hero-engineering.mp4.asset.json";
 import featTeach from "@/assets/feature-teach.jpg";
 import featLearn from "@/assets/feature-learn.jpg";
 import featCredits from "@/assets/feature-credits.jpg";
 
 const marqueeWords = [
-  "Python", "Guitar", "Spanish", "UI Design", "Calculus", "Public Speaking",
-  "Photography", "React", "Cooking", "Chess", "Writing", "Yoga",
+  "DSA", "Python", "Java", "C++", "DAA", "AI / ML",
+  "Operating Systems", "DBMS", "Computer Networks", "Web Dev", "Cloud", "System Design",
 ];
 
 export default function Landing() {
   return (
     <div className="bg-background overflow-hidden">
 
-      {/* ===================== HERO ===================== */}
-      <section className="relative">
-        {/* Decorative blobs */}
-        <div aria-hidden className="absolute -top-24 -left-24 w-[28rem] h-[28rem] bg-accent/40 animate-blob blur-3xl opacity-60" />
-        <div aria-hidden className="absolute top-40 -right-32 w-[32rem] h-[32rem] bg-primary/30 animate-blob blur-3xl opacity-70" />
-        <div aria-hidden className="absolute bottom-0 left-1/3 w-[24rem] h-[24rem] bg-mint/40 animate-blob blur-3xl opacity-50" />
+      {/* ===================== HERO — full-screen video bg ===================== */}
+      <section className="relative h-screen min-h-[640px] w-full overflow-hidden">
+        {/* Background video covers entire hero */}
+        <video
+          src={heroVideo.url}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Dark gradient overlay for text legibility */}
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-foreground/75 via-foreground/45 to-foreground/85" />
+        {/* Subtle warm color wash */}
+        <div aria-hidden className="absolute inset-0 bg-primary/10 mix-blend-overlay" />
 
-        <div className="container relative z-10 pt-16 pb-24 md:pt-24 md:pb-32">
-          {/* top label row */}
-          <div className="flex items-center justify-between mb-12 animate-fade-up">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground text-background text-xs font-mono uppercase tracking-widest">
-              <Sparkles className="w-3.5 h-3.5" /> A new way to learn
+        {/* Top label row */}
+        <div className="relative z-10 container pt-8 md:pt-12 flex items-center justify-between">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background text-foreground text-xs font-mono uppercase tracking-widest shadow-pop">
+            <Sparkles className="w-3.5 h-3.5" /> A new way to learn
+          </div>
+          <div className="hidden md:flex items-center gap-2 text-sm font-mono text-background/90">
+            <div className="flex -space-x-2">
+              <div className="w-7 h-7 rounded-full bg-primary border-2 border-background" />
+              <div className="w-7 h-7 rounded-full bg-accent border-2 border-background" />
+              <div className="w-7 h-7 rounded-full bg-mint border-2 border-background" />
+              <div className="w-7 h-7 rounded-full bg-sky border-2 border-background" />
             </div>
-            <div className="hidden md:flex items-center gap-2 text-sm font-mono text-muted-foreground">
-              <div className="flex -space-x-2">
-                <div className="w-7 h-7 rounded-full bg-primary border-2 border-background" />
-                <div className="w-7 h-7 rounded-full bg-accent border-2 border-background" />
-                <div className="w-7 h-7 rounded-full bg-mint border-2 border-background" />
-                <div className="w-7 h-7 rounded-full bg-sky border-2 border-background" />
-              </div>
-              <span>2,400+ learners this week</span>
-            </div>
+            <span>2,400+ engineers this week</span>
+          </div>
+        </div>
+
+        {/* Centered hero content */}
+        <div className="relative z-10 container h-[calc(100%-6rem)] flex flex-col justify-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/15 backdrop-blur-md border border-background/30 text-background text-xs font-mono uppercase tracking-widest w-fit mb-6 animate-fade-up">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" /> DSA · Python · Java · DAA · AI
           </div>
 
-          {/* Headline */}
-          <h1 className="font-display font-bold tracking-tighter leading-[0.92] text-[3.5rem] sm:text-7xl md:text-8xl lg:text-[10rem] animate-fade-up">
+          <h1 className="font-display font-bold tracking-tighter leading-[0.92] text-[3rem] sm:text-6xl md:text-8xl lg:text-[9rem] text-background animate-fade-up max-w-6xl">
             Teach. Learn.
             <br />
-            <span className="font-serif-italic font-normal text-primary">Exchange</span>{" "}
-            knowledge.
+            <span className="font-serif-italic font-normal text-accent">Exchange</span>{" "}
+            engineering.
           </h1>
 
-          <div className="mt-10 grid md:grid-cols-3 gap-8 items-end animate-fade-up">
-            <p className="md:col-span-2 text-lg md:text-2xl text-muted-foreground max-w-2xl leading-snug">
-              SkillXchange is the credit-based skill economy. Earn credits when you teach,
-              spend them when you learn. <span className="text-foreground font-semibold">No subscriptions. No paywalls.</span>
+          <div className="mt-8 grid md:grid-cols-3 gap-8 items-end animate-fade-up max-w-6xl">
+            <p className="md:col-span-2 text-lg md:text-2xl text-background/90 max-w-2xl leading-snug">
+              SkillXchange is the credit-based skill economy for CS &amp; engineering students.
+              Earn credits when you teach, spend them when you learn.
+              <span className="text-accent font-semibold"> No subscriptions. No paywalls.</span>
             </p>
             <div className="flex flex-col gap-3">
               <Button size="lg" asChild className="h-14 text-base font-semibold rounded-full shadow-pop">
@@ -58,71 +72,44 @@ export default function Landing() {
                   Claim 100 credits <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="h-14 text-base rounded-full border-foreground/20 hover:bg-foreground hover:text-background">
+              <Button size="lg" variant="outline" asChild className="h-14 text-base rounded-full bg-transparent border-background/40 text-background hover:bg-background hover:text-foreground">
                 <Link to="/auth">I have an account</Link>
               </Button>
             </div>
           </div>
-        </div>
 
-        {/* HERO VIDEO BLOCK */}
-        <div className="container pb-20 md:pb-28">
-          <div className="relative rounded-[2rem] overflow-hidden shadow-pop group">
-            <video
-              src={heroVideo.url}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-[60vh] md:h-[80vh] object-cover"
-            />
-            {/* overlay gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent" />
-
-            {/* floating play badge */}
-            <div className="absolute top-6 left-6 flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/90 backdrop-blur text-xs font-mono uppercase tracking-widest">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" /> Live demo
-            </div>
-
-            {/* big quote bottom */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12">
-              <div className="max-w-3xl">
-                <p className="font-display text-2xl md:text-5xl font-bold text-background leading-tight">
-                  "The best way to learn anything is from <span className="font-serif-italic font-normal text-accent">someone who just learned it.</span>"
-                </p>
-                <div className="mt-4 flex items-center gap-3 text-background/80 font-mono text-sm">
-                  <div className="w-8 h-px bg-background/50" />
-                  Built for the next generation of learners
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats strip */}
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { v: "100", l: "Free credits at signup" },
-              { v: "0$", l: "Subscription cost" },
-              { v: "1:1", l: "Peer sessions" },
-              { v: "∞", l: "Skills to exchange" },
-            ].map((s) => (
-              <div key={s.l} className="rounded-2xl bg-card p-6 shadow-card">
-                <div className="font-display text-4xl md:text-5xl font-bold text-foreground">{s.v}</div>
-                <div className="mt-1 text-sm text-muted-foreground">{s.l}</div>
-              </div>
-            ))}
+          {/* Live badge bottom-left */}
+          <div className="absolute bottom-8 left-4 md:left-8 flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/90 backdrop-blur text-xs font-mono uppercase tracking-widest">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" /> Live
           </div>
         </div>
+      </section>
 
-        {/* MARQUEE of skills */}
-        <div className="border-y-2 border-foreground py-5 bg-accent overflow-hidden">
-          <div className="marquee whitespace-nowrap">
-            {[...marqueeWords, ...marqueeWords].map((w, i) => (
-              <span key={i} className="font-display text-3xl md:text-5xl font-bold mx-8 inline-flex items-center gap-8">
-                {w} <Star className="w-6 h-6 fill-foreground" />
-              </span>
-            ))}
-          </div>
+      {/* ===================== STATS STRIP ===================== */}
+      <section className="container py-12 md:py-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { v: "100", l: "Free credits at signup" },
+            { v: "0$", l: "Subscription cost" },
+            { v: "1:1", l: "Peer sessions" },
+            { v: "∞", l: "Skills to exchange" },
+          ].map((s) => (
+            <div key={s.l} className="rounded-2xl bg-card p-6 shadow-card">
+              <div className="font-display text-4xl md:text-5xl font-bold text-foreground">{s.v}</div>
+              <div className="mt-1 text-sm text-muted-foreground">{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* MARQUEE of engineering skills */}
+      <section className="border-y-2 border-foreground py-5 bg-accent overflow-hidden">
+        <div className="marquee whitespace-nowrap">
+          {[...marqueeWords, ...marqueeWords].map((w, i) => (
+            <span key={i} className="font-display text-3xl md:text-5xl font-bold mx-8 inline-flex items-center gap-8">
+              {w} <Star className="w-6 h-6 fill-foreground" />
+            </span>
+          ))}
         </div>
       </section>
 
