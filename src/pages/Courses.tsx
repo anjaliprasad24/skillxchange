@@ -54,7 +54,7 @@ export default function Courses() {
           Browse <span className="font-serif-italic font-normal text-primary">peer-taught</span> courses.
         </h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl">
-          Spend credits to enroll. Every session is run by a real student who already learned it.
+          Spend credits to enroll. Every session is run by a user who already learned it.
         </p>
       </div>
 
