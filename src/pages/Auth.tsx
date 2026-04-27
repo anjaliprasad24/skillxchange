@@ -84,7 +84,7 @@ export default function Auth() {
               </div>
               <div>
                 <Label htmlFor="phone">Phone (optional)</Label>
-                <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 555 0100" />
+                <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 1234567894" />
               </div>
             </>
           )}
