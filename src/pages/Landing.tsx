@@ -7,8 +7,8 @@ import featLearn from "@/assets/feature-learn.jpg";
 import featCredits from "@/assets/feature-credits.jpg";
 
 const marqueeWords = [
-  "DSA", "Python", "Java", "C++", "DAA", "AI / ML",
-  "Operating Systems", "DBMS", "Computer Networks", "Web Dev", "Cloud", "System Design",
+  "DSA", "Python", "Java", "C++", "DAA", "AI / ML", "DBMS",
+  "Operating Systems", "Computer Networks", "Web Dev", "Cloud", "System Design",
 ];
 
 export default function Landing() {
@@ -36,35 +36,21 @@ export default function Landing() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background text-foreground text-xs font-mono uppercase tracking-widest shadow-pop">
             <Sparkles className="w-3.5 h-3.5" /> A new way to learn
           </div>
-          <div className="hidden md:flex items-center gap-2 text-sm font-mono text-background/90">
-            <div className="flex -space-x-2">
-              <div className="w-7 h-7 rounded-full bg-primary border-2 border-background" />
-              <div className="w-7 h-7 rounded-full bg-accent border-2 border-background" />
-              <div className="w-7 h-7 rounded-full bg-mint border-2 border-background" />
-              <div className="w-7 h-7 rounded-full bg-sky border-2 border-background" />
-            </div>
-            <span>2,400+ engineers this week</span>
-          </div>
         </div>
 
         {/* Centered hero content */}
         <div className="relative z-10 container h-[calc(100%-6rem)] flex flex-col justify-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/15 backdrop-blur-md border border-background/30 text-background text-xs font-mono uppercase tracking-widest w-fit mb-6 animate-fade-up">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" /> DSA · Python · Java · DAA · AI
-          </div>
-
           <h1 className="font-display font-bold tracking-tighter leading-[0.92] text-[3rem] sm:text-6xl md:text-8xl lg:text-[9rem] text-background animate-fade-up max-w-6xl">
             Teach. Learn.
             <br />
             <span className="font-serif-italic font-normal text-accent">Exchange</span>{" "}
-            engineering.
+            knowledge.
           </h1>
 
           <div className="mt-8 grid md:grid-cols-3 gap-8 items-end animate-fade-up max-w-6xl">
-            <p className="md:col-span-2 text-lg md:text-2xl text-background/90 max-w-2xl leading-snug">
-              SkillXchange is the credit-based skill economy for CS &amp; engineering students.
-              Earn credits when you teach, spend them when you learn.
-              <span className="text-accent font-semibold"> No subscriptions. No paywalls.</span>
+            <p className="md:col-span-2 text-lg md:text-xl text-background/90 max-w-xl leading-snug">
+              Earn credits when you teach. Spend them when you learn.
+              <span className="text-accent font-semibold"> No subscriptions.</span>
             </p>
             <div className="flex flex-col gap-3">
               <Button size="lg" asChild className="h-14 text-base font-semibold rounded-full shadow-pop">
@@ -85,20 +71,22 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ===================== STATS STRIP ===================== */}
-      <section className="container py-12 md:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { v: "100", l: "Free credits at signup" },
-            { v: "0$", l: "Subscription cost" },
-            { v: "1:1", l: "Peer sessions" },
-            { v: "∞", l: "Skills to exchange" },
-          ].map((s) => (
-            <div key={s.l} className="rounded-2xl bg-card p-6 shadow-card">
-              <div className="font-display text-4xl md:text-5xl font-bold text-foreground">{s.v}</div>
-              <div className="mt-1 text-sm text-muted-foreground">{s.l}</div>
-            </div>
-          ))}
+      {/* ===================== STATS STRIP — bold colored block ===================== */}
+      <section className="bg-gradient-warm py-16 md:py-20 border-b-2 border-foreground">
+        <div className="container">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { v: "100", l: "Free credits at signup" },
+              { v: "0$", l: "Subscription cost" },
+              { v: "1:1", l: "Peer sessions" },
+              { v: "∞", l: "Skills to exchange" },
+            ].map((s) => (
+              <div key={s.l} className="rounded-2xl bg-background p-6 shadow-card border-2 border-foreground/10">
+                <div className="font-display text-4xl md:text-5xl font-bold text-foreground">{s.v}</div>
+                <div className="mt-1 text-sm text-foreground/70">{s.l}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
