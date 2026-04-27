@@ -72,7 +72,7 @@ export default function Landing() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { v: "100", l: "Free credits at signup" },
-            { v: "0$", l: "Subscription cost" },
+            { v: "₹0", l: "Subscription cost" },
             { v: "1:1", l: "Peer sessions" },
             { v: "∞", l: "Skills to exchange" },
           ].map((s) => (
