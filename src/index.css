@@ -12,7 +12,7 @@
 @layer base {
   :root {
     /* Surfaces — warm cream, not cold white */
-    --background: 40 50% 97%;            /* #FBF7EE warm cream */
+    --background: 24 70% 94%;            /* soft warm peach */
     --foreground: 230 35% 12%;           /* deep navy ink */
     --card: 0 0% 100%;
     --card-foreground: 230 35% 12%;
