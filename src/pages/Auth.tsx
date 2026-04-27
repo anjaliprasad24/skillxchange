@@ -80,7 +80,7 @@ export default function Auth() {
             <>
               <div>
                 <Label htmlFor="name">Full name</Label>
-                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ada Lovelace" />
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ananya Tripathi" />
               </div>
               <div>
                 <Label htmlFor="phone">Phone (optional)</Label>
