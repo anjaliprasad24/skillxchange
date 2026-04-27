@@ -174,13 +174,6 @@ export default function CourseDetail() {
                       {s.mode}
                     </div>
                   </div>
-                  <div>
-                    <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-1">Seats</div>
-                    <div className="font-medium flex items-center gap-2">
-                      <Users className="w-4 h-4" />
-                      {s.slots - s.taken} / {s.slots} open
-                    </div>
-                  </div>
                 </div>
 
                 <div>
