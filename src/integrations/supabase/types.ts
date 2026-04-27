@@ -715,6 +715,10 @@ export type Database = {
     }
     Functions: {
       complete_session: { Args: { _enrollment_id: string }; Returns: undefined }
+      create_team_and_join: {
+        Args: { _event_id: string; _team_name: string }
+        Returns: string
+      }
       enroll_in_session: { Args: { _session_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -723,6 +727,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      notify_user: {
+        Args: { _message: string; _user_id: string }
+        Returns: undefined
+      }
+      register_team_for_event: { Args: { _team_id: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
