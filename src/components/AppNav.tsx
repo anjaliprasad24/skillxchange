@@ -18,10 +18,10 @@ export function AppNav() {
     : [];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between">
         <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center text-primary-foreground transition-smooth group-hover:glow-primary">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground transition-smooth group-hover:scale-110">
             <Sparkles className="w-4 h-4" strokeWidth={2.5} />
           </div>
           <span className="font-display font-bold text-lg tracking-tight">
