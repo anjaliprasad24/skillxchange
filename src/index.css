@@ -1,106 +1,138 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ========================================================================
-   SkillXchange — Bold & Modern dark theme
-   All colors in HSL. Use semantic tokens only.
-   Signature: electric lime primary on near-black canvas.
+   SkillXchange — BRIGHT, bold, editorial.
+   Warm cream canvas, coral primary, sunny yellow + mint accents.
+   Designed to feel premium, joyful, and impossible to ignore.
    ======================================================================== */
 
 @layer base {
   :root {
-    /* Surfaces */
-    --background: 240 10% 4%;          /* near-black with cool tint */
-    --foreground: 60 9% 96%;            /* warm off-white */
-    --card: 240 8% 7%;
-    --card-foreground: 60 9% 96%;
-    --popover: 240 8% 7%;
-    --popover-foreground: 60 9% 96%;
+    /* Surfaces — warm cream, not cold white */
+    --background: 40 50% 97%;            /* #FBF7EE warm cream */
+    --foreground: 230 35% 12%;           /* deep navy ink */
+    --card: 0 0% 100%;
+    --card-foreground: 230 35% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 230 35% 12%;
 
-    /* Brand: electric lime — the "credit" color */
-    --primary: 75 95% 58%;
-    --primary-foreground: 240 10% 4%;
-    --primary-glow: 75 100% 70%;
+    /* Brand: vivid coral — energetic, premium */
+    --primary: 8 90% 62%;                 /* #F25C4D */
+    --primary-foreground: 40 50% 97%;
+    --primary-glow: 14 95% 70%;
 
-    /* Secondary: deep violet for variety */
-    --secondary: 263 70% 60%;
-    --secondary-foreground: 60 9% 96%;
+    /* Secondary: deep navy — for buttons/contrast blocks */
+    --secondary: 230 35% 12%;
+    --secondary-foreground: 40 50% 97%;
 
     /* Accents */
-    --accent: 195 100% 60%;             /* cyan */
-    --accent-foreground: 240 10% 4%;
+    --accent: 48 100% 60%;                /* sunny yellow */
+    --accent-foreground: 230 35% 12%;
+    --mint: 152 60% 65%;                  /* fresh mint */
+    --sky: 205 90% 70%;                   /* soft sky */
+    --lilac: 270 70% 78%;
 
-    --muted: 240 6% 12%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 40 30% 92%;
+    --muted-foreground: 230 15% 40%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 60 9% 96%;
+    --destructive: 0 84% 55%;
+    --destructive-foreground: 40 50% 97%;
 
-    --border: 240 6% 16%;
-    --input: 240 6% 12%;
-    --ring: 75 95% 58%;
+    --border: 230 15% 88%;
+    --input: 40 30% 94%;
+    --ring: 8 90% 62%;
 
-    --radius: 0.375rem;                 /* sharper modern feel */
+    --radius: 1rem;
 
-    /* Gradients & glows */
-    --gradient-hero: radial-gradient(ellipse at top, hsl(75 95% 58% / 0.15), transparent 60%),
-                     radial-gradient(ellipse at bottom right, hsl(263 70% 60% / 0.12), transparent 50%);
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-credit: linear-gradient(135deg, hsl(75 95% 58%), hsl(160 84% 50%));
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.35);
-    --shadow-card: 0 1px 0 0 hsl(var(--border)), 0 12px 40px -12px hsl(0 0% 0% / 0.5);
+    /* Gradients */
+    --gradient-warm: linear-gradient(135deg, hsl(8 90% 62%) 0%, hsl(28 95% 65%) 50%, hsl(48 100% 65%) 100%);
+    --gradient-cool: linear-gradient(135deg, hsl(152 60% 65%), hsl(205 90% 70%));
+    --gradient-sunset: linear-gradient(180deg, hsl(48 100% 70%) 0%, hsl(8 90% 62%) 100%);
 
-    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-soft: 0 4px 20px -4px hsl(230 35% 12% / 0.08);
+    --shadow-pop: 0 20px 60px -20px hsl(8 90% 62% / 0.45);
+    --shadow-card: 0 1px 0 hsl(230 15% 88%), 0 12px 30px -10px hsl(230 35% 12% / 0.12);
+
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Light mode disabled — SkillXchange is dark-only by design */
-  .dark { /* same tokens */ }
+  .dark { /* light-only by design */ }
 
-  * {
-    @apply border-border;
-  }
-  html {
-    scroll-behavior: smooth;
-  }
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
-    background-image:
-      radial-gradient(circle at 15% 10%, hsl(75 95% 58% / 0.06), transparent 35%),
-      radial-gradient(circle at 85% 85%, hsl(263 70% 60% / 0.05), transparent 40%);
-    background-attachment: fixed;
   }
   h1, h2, h3, h4, h5 {
     font-family: 'Space Grotesk', system-ui, sans-serif;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
   }
   .font-display { font-family: 'Space Grotesk', system-ui, sans-serif; }
-  .font-mono    { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .font-serif-italic { font-family: 'Instrument Serif', serif; font-style: italic; }
 }
 
 @layer utilities {
-  .text-gradient-credit {
-    background: var(--gradient-credit);
+  .text-gradient-warm {
+    background: var(--gradient-warm);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
-  .bg-grid {
-    background-image:
-      linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 30%, transparent 80%);
-  }
-  .glow-primary { box-shadow: var(--shadow-glow); }
-  .card-elevated { box-shadow: var(--shadow-card); }
+  .bg-gradient-warm { background: var(--gradient-warm); }
+  .bg-gradient-cool { background: var(--gradient-cool); }
+  .bg-gradient-sunset { background: var(--gradient-sunset); }
+  .bg-cream { background-color: hsl(var(--background)); }
+  .bg-mint { background-color: hsl(var(--mint)); }
+  .bg-sky-soft { background-color: hsl(var(--sky)); }
+  .bg-lilac { background-color: hsl(var(--lilac)); }
+  .bg-sunny { background-color: hsl(var(--accent)); }
+
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-pop  { box-shadow: var(--shadow-pop); }
+  .shadow-card { box-shadow: var(--shadow-card); }
   .transition-smooth { transition: var(--transition-smooth); }
+
+  .grain {
+    position: relative;
+  }
+  .grain::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.08;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+
+  .marquee {
+    display: flex;
+    animation: marquee 30s linear infinite;
+  }
 }
 
-/* Custom scrollbar */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-12px) rotate(2deg); }
+}
+.animate-float { animation: float-soft 6s ease-in-out infinite; }
+
+@keyframes blob {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  50%      { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+}
+.animate-blob { animation: blob 12s ease-in-out infinite; }
+
+/* Scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: hsl(var(--background)); }
 ::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.4); }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.5); }
