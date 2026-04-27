@@ -13,6 +13,8 @@ import Dashboard from "@/pages/Dashboard";
 import Courses from "@/pages/Courses";
 import CourseDetail from "@/pages/CourseDetail";
 import Teach from "@/pages/Teach";
+import NewCourse from "@/pages/NewCourse";
+import ManageCourse from "@/pages/ManageCourse";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 
