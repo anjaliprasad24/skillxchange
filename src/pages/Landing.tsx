@@ -7,8 +7,8 @@ import featLearn from "@/assets/feature-learn.jpg";
 import featCredits from "@/assets/feature-credits.jpg";
 
 const marqueeWords = [
-  "DSA", "Python", "Java", "C++", "DAA", "AI / ML",
-  "Operating Systems", "DBMS", "Computer Networks", "Web Dev", "Cloud", "System Design",
+  "DSA", "Python", "Java", "C++", "DAA", "AI / ML", "DBMS",
+  "Operating Systems", "Computer Networks", "Web Dev", "Cloud", "System Design",
 ];
 
 export default function Landing() {
