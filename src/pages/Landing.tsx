@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Coins, GraduationCap, Sparkles, Star, Play, Users, Zap, ArrowUpRight } from "lucide-react";
-import heroVideo from "@/assets/hero-learning.mp4.asset.json";
+import heroVideo from "@/assets/hero-engineering.mp4.asset.json";
 import featTeach from "@/assets/feature-teach.jpg";
 import featLearn from "@/assets/feature-learn.jpg";
 import featCredits from "@/assets/feature-credits.jpg";
 
 const marqueeWords = [
-  "Python", "Guitar", "Spanish", "UI Design", "Calculus", "Public Speaking",
-  "Photography", "React", "Cooking", "Chess", "Writing", "Yoga",
+  "DSA", "Python", "Java", "C++", "DAA", "AI / ML",
+  "Operating Systems", "DBMS", "Computer Networks", "Web Dev", "Cloud", "System Design",
 ];
 
 export default function Landing() {
