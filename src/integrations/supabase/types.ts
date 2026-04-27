@@ -714,6 +714,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      complete_session: { Args: { _enrollment_id: string }; Returns: undefined }
       enroll_in_session: { Args: { _session_id: string }; Returns: string }
       has_role: {
         Args: {
