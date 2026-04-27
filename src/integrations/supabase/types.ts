@@ -47,7 +47,7 @@ export type Database = {
           end_date: string
           id: string
           location_id: string | null
-          mentor_id: string
+          mentor_id: string | null
           mode: Database["public"]["Enums"]["session_mode"]
           slots: number
           start_date: string
@@ -58,7 +58,7 @@ export type Database = {
           end_date: string
           id?: string
           location_id?: string | null
-          mentor_id: string
+          mentor_id?: string | null
           mode: Database["public"]["Enums"]["session_mode"]
           slots: number
           start_date: string
@@ -69,7 +69,7 @@ export type Database = {
           end_date?: string
           id?: string
           location_id?: string | null
-          mentor_id?: string
+          mentor_id?: string | null
           mode?: Database["public"]["Enums"]["session_mode"]
           slots?: number
           start_date?: string
