@@ -1,21 +1,19 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Profile {
-  id: string;
+  user_id: number;
   name: string;
   email: string;
-  phone: string | null;
+  phone: string;
   credits: number;
   reputation: number;
 }
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: Profile | null;
   profile: Profile | null;
   loading: boolean;
+  signIn: (userData: Profile) => void;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -23,51 +21,69 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<Profile | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = async (uid: string) => {
-    const { data } = await supabase.from("profiles").select("*").eq("id", uid).maybeSingle();
-    if (data) setProfile(data as Profile);
-  };
-
   useEffect(() => {
-    // 1. Set up listener FIRST (avoid missed events)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-      setUser(newSession?.user ?? null);
-      if (newSession?.user) {
-        // defer to avoid deadlock with onAuthStateChange
-        setTimeout(() => fetchProfile(newSession.user.id), 0);
-      } else {
-        setProfile(null);
+    // Check localStorage on mount
+    const storedUser = localStorage.getItem("skillxchange_user");
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        setUser(parsed);
+        setProfile(parsed);
+        
+        // Fetch the absolute latest from the DB in the background
+        fetch(`/api/users/${parsed.user_id}`)
+          .then(res => {
+            if (res.ok) return res.json();
+            throw new Error("Failed");
+          })
+          .then(latestUser => {
+            setUser(latestUser);
+            setProfile(latestUser);
+            localStorage.setItem("skillxchange_user", JSON.stringify(latestUser));
+          })
+          .catch(e => console.error(e));
+          
+      } catch (e) {
+        localStorage.removeItem("skillxchange_user");
       }
-    });
-
-    // 2. Then check existing session
-    supabase.auth.getSession().then(({ data: { session: existing } }) => {
-      setSession(existing);
-      setUser(existing?.user ?? null);
-      if (existing?.user) fetchProfile(existing.user.id);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    }
+    setLoading(false);
   }, []);
 
+  const signIn = (userData: Profile) => {
+    localStorage.setItem("skillxchange_user", JSON.stringify(userData));
+    setUser(userData);
+    setProfile(userData);
+  };
+
   const signOut = async () => {
-    await supabase.auth.signOut();
+    localStorage.removeItem("skillxchange_user");
+    setUser(null);
     setProfile(null);
   };
 
   const refreshProfile = async () => {
-    if (user) await fetchProfile(user.id);
+    if (user) {
+      try {
+        const res = await fetch(`/api/users/${user.user_id}`);
+        if (res.ok) {
+          const latestUser = await res.json();
+          setUser(latestUser);
+          setProfile(latestUser);
+          localStorage.setItem("skillxchange_user", JSON.stringify(latestUser));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, loading, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

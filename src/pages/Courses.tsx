@@ -25,12 +25,16 @@ export default function Courses() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from("courses")
-        .select("id, title, description, credit_cost, skill_id, skills(name), course_sessions(id, start_date, slots)")
-        .order("created_at", { ascending: false });
-      setCourses((data as any) ?? []);
-      setLoading(false);
+      try {
+        const res = await fetch("/api/courses");
+        if (!res.ok) throw new Error("Failed to fetch courses");
+        const data = await res.json();
+        setCourses(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 

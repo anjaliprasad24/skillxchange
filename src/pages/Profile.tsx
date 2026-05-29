@@ -15,10 +15,20 @@ export default function Profile() {
   const save = async () => {
     if (!profile) return;
     setBusy(true);
-    const { error } = await supabase.from("profiles").update({ name, phone }).eq("id", profile.id);
-    setBusy(false);
-    if (error) toast.error(error.message);
-    else { toast.success("Profile updated"); refreshProfile(); }
+    try {
+      const res = await fetch(`/api/users/${profile.user_id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone })
+      });
+      if (!res.ok) throw new Error("Could not update profile");
+      toast.success("Profile updated");
+      await refreshProfile();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (

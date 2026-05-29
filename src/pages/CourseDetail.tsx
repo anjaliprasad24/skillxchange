@@ -23,6 +23,11 @@ interface Session {
   slots: number;
   taken: number;
   enrolled: boolean;
+  mentor: {
+    name: string;
+    email: string;
+    phone: string;
+  };
 }
 
 export default function CourseDetail() {
@@ -36,46 +41,45 @@ export default function CourseDetail() {
 
   const load = async () => {
     if (!id) return;
-    const { data: c } = await supabase
-      .from("courses")
-      .select("id, title, description, credit_cost, skills(name)")
-      .eq("id", id)
-      .maybeSingle();
-    setCourse(c as any);
+    try {
+      const res = await fetch(`/api/courses/${id}`);
+      if (!res.ok) throw new Error("Course not found");
+      const data = await res.json();
+      
+      setCourse(data.course);
+      
+      // Check enrollments if logged in
+      let enrolledMap: Record<string, boolean> = {};
+      if (user && data.sessions.length > 0) {
+        const sessionIds = data.sessions.map((s: any) => s.id);
+        const enrollRes = await fetch("/api/enrollments/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: user.user_id, session_ids: sessionIds })
+        });
+        if (enrollRes.ok) {
+          enrolledMap = await enrollRes.json();
+        }
+      }
 
-    const { data: sess } = await supabase
-      .from("course_sessions")
-      .select("id, start_date, end_date, mode, slots")
-      .eq("course_id", id)
-      .order("start_date");
-
-    const sessIds = (sess ?? []).map((s) => s.id);
-    let enrollMap: Record<string, boolean> = {};
-    let countMap: Record<string, number> = {};
-    if (sessIds.length) {
-      const { data: enrolls } = await supabase
-        .from("enrollments")
-        .select("session_id, student_id, status")
-        .in("session_id", sessIds);
-      (enrolls ?? []).forEach((e: any) => {
-        if (e.status === "Active") countMap[e.session_id] = (countMap[e.session_id] ?? 0) + 1;
-        if (user && e.student_id === user.id) enrollMap[e.session_id] = true;
-      });
+      setSessions(
+        data.sessions.map((s: any) => ({
+          ...s,
+          enrolled: !!enrolledMap[s.id],
+        }))
+      );
+    } catch (err) {
+      console.error(err);
+      setCourse(null);
+    } finally {
+      setLoading(false);
     }
-    setSessions(
-      (sess ?? []).map((s: any) => ({
-        ...s,
-        taken: countMap[s.id] ?? 0,
-        enrolled: !!enrollMap[s.id],
-      }))
-    );
-    setLoading(false);
   };
 
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, user?.id]);
+  }, [id, user?.user_id]);
 
   const enroll = async (sessionId: string) => {
     if (!course) return;
@@ -88,15 +92,28 @@ export default function CourseDetail() {
       return;
     }
     setEnrollingId(sessionId);
-    const { error } = await supabase.rpc("enroll_in_session", { _session_id: sessionId });
-    setEnrollingId(null);
-    if (error) {
-      toast.error(error.message);
-      return;
+    
+    try {
+      const res = await fetch("/api/courses/enroll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.user_id, session_id: sessionId })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to enroll");
+      
+      toast.success(`Enrolled! ${course.credit_cost} credits debited.`);
+      
+      // Update local profile credit count from database
+      await refreshProfile();
+      
+      await load();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setEnrollingId(null);
     }
-    toast.success(`Enrolled! ${course.credit_cost} credits debited.`);
-    await refreshProfile();
-    await load();
   };
 
   if (loading) {
@@ -172,6 +189,14 @@ export default function CourseDetail() {
                     <div className="font-medium flex items-center gap-2">
                       {s.mode === "Online" ? <Globe className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
                       {s.mode}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-1">Mentor</div>
+                    <div className="font-medium flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      {s.mentor?.name || "Unknown"}
+                      {s.mentor?.email && <span className="text-xs text-muted-foreground ml-1">({s.mentor.email})</span>}
                     </div>
                   </div>
                 </div>

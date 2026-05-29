@@ -31,21 +31,18 @@ export default function Teach() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: c }, { data: s }] = await Promise.all([
-        supabase
-          .from("courses")
-          .select("id, title, credit_cost, skills(name), course_sessions(id)")
-          .eq("created_by", user.id)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("course_sessions")
-          .select("id, start_date, mode, slots, courses(id, title, credit_cost), enrollments(id, status)")
-          .eq("mentor_id", user.id)
-          .order("start_date"),
-      ]);
-      setCourses((c as any) ?? []);
-      setSessions((s as any) ?? []);
-      setLoading(false);
+      try {
+        const res = await fetch(`/api/users/${user.user_id}/teaching`);
+        if (!res.ok) throw new Error("Failed to fetch teaching data");
+        const data = await res.json();
+        
+        setCourses(data.courses);
+        setSessions(data.sessions);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, [user]);
 

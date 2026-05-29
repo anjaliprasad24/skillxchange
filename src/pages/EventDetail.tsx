@@ -34,69 +34,92 @@ export default function EventDetail() {
 
   const load = async () => {
     if (!id) return;
-    const [{ data: e }, { data: ts }, { data: tm }, { data: regs }] = await Promise.all([
-      supabase.from("events").select("*").eq("id", id).maybeSingle(),
-      supabase.from("teams").select("*").eq("event_id", id),
-      supabase.from("team_members").select("team_id, user_id"),
-      supabase.from("event_registrations").select("team_id"),
-    ]);
-    setEv(e as any);
-
-    const memberMap = new Map<string, string[]>();
-    tm?.forEach((m) => {
-      const arr = memberMap.get(m.team_id) ?? [];
-      arr.push(m.user_id);
-      memberMap.set(m.team_id, arr);
-    });
-    const regSet = new Set(regs?.map((r) => r.team_id) ?? []);
-    setTeams(
-      (ts ?? []).map((t) => ({
-        id: t.id,
-        team_name: t.team_name,
-        member_ids: memberMap.get(t.id) ?? [],
-        registered: regSet.has(t.id),
-      })),
-    );
-    setLoading(false);
+    try {
+      const res = await fetch(`/api/events/${id}`);
+      if (!res.ok) throw new Error("Event not found");
+      const data = await res.json();
+      
+      setEv(data.event);
+      setTeams(data.teams);
+    } catch (err) {
+      console.error(err);
+      setEv(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, [id]);
 
   const createTeam = async () => {
-    if (!newTeamName.trim() || !id) return;
+    if (!newTeamName.trim() || !id || !user) return;
     setBusy(true);
-    const { error } = await supabase.rpc("create_team_and_join", {
-      _event_id: id,
-      _team_name: newTeamName.trim(),
-    });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Team created. You're in!");
-    setNewTeamName("");
-    load();
+    try {
+      const res = await fetch(`/api/events/${id}/teams`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: user.user_id,
+          team_name: newTeamName.trim()
+        })
+      });
+      if (!res.ok) throw new Error("Could not create team");
+      toast.success("Team created. You're in!");
+      setNewTeamName("");
+      load();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const joinTeam = async (teamId: string) => {
-    if (!user) return;
-    const { error } = await supabase.from("team_members").insert({ team_id: teamId, user_id: user.id });
-    if (error) return toast.error(error.message);
-    toast.success("Joined team");
-    load();
+    if (!user || !id) return;
+    try {
+      const res = await fetch(`/api/events/${id}/teams`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: user.user_id,
+          team_id: teamId
+        })
+      });
+      if (!res.ok) throw new Error("Could not join team");
+      toast.success("Joined team");
+      load();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   const leaveTeam = async (teamId: string) => {
     if (!user) return;
-    const { error } = await supabase.from("team_members").delete().eq("team_id", teamId).eq("user_id", user.id);
-    if (error) return toast.error(error.message);
-    toast.success("Left team");
-    load();
+    try {
+      const res = await fetch(`/api/events/teams/${teamId}/leave`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.user_id })
+      });
+      if (!res.ok) throw new Error("Could not leave team");
+      toast.success("Left team");
+      load();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   const registerTeam = async (teamId: string) => {
-    const { error } = await supabase.rpc("register_team_for_event", { _team_id: teamId });
-    if (error) return toast.error(error.message);
-    toast.success("Team registered for the event!");
-    load();
+    try {
+      const res = await fetch(`/api/events/teams/${teamId}/register`, {
+        method: "POST"
+      });
+      if (!res.ok) throw new Error("Could not register team");
+      toast.success("Team registered for the event!");
+      load();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   if (loading) return <div className="container py-12">Loading…</div>;
@@ -135,7 +158,7 @@ export default function EventDetail() {
           ) : (
             <ul className="space-y-3">
               {teams.map((t) => {
-                const mine = user ? t.member_ids.includes(user.id) : false;
+                const mine = user ? t.member_ids.includes(user.user_id?.toString()) : false;
                 return (
                   <li key={t.id} className="rounded-2xl bg-card p-5 shadow-card flex items-center justify-between flex-wrap gap-3">
                     <div className="min-w-0">

@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Coins, GraduationCap, Sparkles, Star, Play, Users, Zap, ArrowUpRight } from "lucide-react";
-import heroVideo from "@/assets/hero-engineering.mp4.asset.json";
 import featTeach from "@/assets/feature-teach.jpg";
 import featLearn from "@/assets/feature-learn.jpg";
 import featCredits from "@/assets/feature-credits.jpg";
@@ -19,7 +18,7 @@ export default function Landing() {
       <section className="relative h-screen min-h-[640px] w-full overflow-hidden">
         {/* Background video covers entire hero */}
         <video
-          src={heroVideo.url}
+          poster="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop"
           autoPlay
           loop
           muted

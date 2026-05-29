@@ -21,19 +21,17 @@ export default function Events() {
 
   useEffect(() => {
     (async () => {
-      const { data: evs } = await supabase
-        .from("events")
-        .select("*")
-        .order("start_date", { ascending: true });
-      if (!evs) { setLoading(false); return; }
-
-      const ids = evs.map((e) => e.id);
-      const { data: teams } = await supabase.from("teams").select("event_id").in("event_id", ids);
-      const counts = new Map<string, number>();
-      teams?.forEach((t) => counts.set(t.event_id, (counts.get(t.event_id) ?? 0) + 1));
-
-      setEvents(evs.map((e) => ({ ...e, team_count: counts.get(e.id) ?? 0 })));
-      setLoading(false);
+      try {
+        const res = await fetch("/api/events");
+        if (res.ok) {
+          const evs = await res.json();
+          setEvents(evs);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 

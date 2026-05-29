@@ -49,60 +49,84 @@ export default function ManageCourse() {
 
   const load = async () => {
     if (!id) return;
-    const { data: c } = await supabase
-      .from("courses")
-      .select("id, title, description, credit_cost, created_by, skills(name)")
-      .eq("id", id)
-      .maybeSingle();
-    setCourse(c as any);
-
-    const { data: s } = await supabase
-      .from("course_sessions")
-      .select("id, start_date, end_date, mode, slots, enrollments(id, status, student:profiles!enrollments_student_id_fkey(id, name, email))")
-      .eq("course_id", id)
-      .order("start_date");
-    setSessions((s as any) ?? []);
-    setLoading(false);
+    try {
+      const res = await fetch(`/api/manage/courses/${id}`);
+      if (!res.ok) throw new Error("Course not found");
+      const data = await res.json();
+      setCourse(data.course);
+      setSessions(data.sessions);
+    } catch (err) {
+      console.error(err);
+      setCourse(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [id]);
 
-  const isOwner = course && user && course.created_by === user.id;
+  const isOwner = course && user && course.created_by === user.user_id?.toString();
 
   const createSession = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !id || !startDate) return;
     setCreating(true);
-    const { error } = await supabase.from("course_sessions").insert({
-      course_id: id,
-      mentor_id: user.id,
-      start_date: startDate,
-      end_date: startDate,
-      mode,
-      slots,
-    });
-    setCreating(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Session scheduled");
-    setStartDate(""); setSlots(1);
-    load();
+    
+    try {
+      const res = await fetch(`/api/manage/courses/${id}/sessions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mentor_id: user.user_id,
+          start_date: startDate,
+          end_date: startDate,
+          mode,
+          slots
+        })
+      });
+      if (!res.ok) throw new Error("Could not schedule session");
+      toast.success("Session scheduled");
+      setStartDate(""); setSlots(1);
+      load();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setCreating(false);
+    }
   };
 
   const completeEnrollment = async (enrollmentId: string, courseTitle: string, cost: number) => {
     setCompleting(enrollmentId);
-    const { error } = await supabase.rpc("complete_session", { _enrollment_id: enrollmentId });
-    setCompleting(null);
-    if (error) { toast.error(error.message); return; }
-    toast.success(`+${cost} credits earned for "${courseTitle}"`);
-    load();
+    try {
+      const res = await fetch(`/api/manage/enrollments/${enrollmentId}/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          course_title: courseTitle,
+          credit_cost: cost,
+          mentor_id: user?.user_id
+        })
+      });
+      if (!res.ok) throw new Error("Could not mark complete");
+      toast.success(`+${cost} credits earned for "${courseTitle}"`);
+      load();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setCompleting(null);
+    }
   };
 
   const deleteSession = async (sessionId: string) => {
     if (!confirm("Delete this session? Enrolled learners will lose access.")) return;
-    const { error } = await supabase.from("course_sessions").delete().eq("id", sessionId);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Session deleted");
-    load();
+    try {
+      const res = await fetch(`/api/manage/sessions/${sessionId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Could not delete session");
+      toast.success("Session deleted");
+      load();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   if (loading) {

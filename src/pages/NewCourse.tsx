@@ -31,8 +31,15 @@ export default function NewCourse() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("skills").select("id, name").order("name");
-      setSkills((data as any) ?? []);
+      try {
+        const res = await fetch("/api/skills");
+        if (res.ok) {
+          const data = await res.json();
+          setSkills(data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     })();
   }, []);
 
@@ -45,35 +52,47 @@ export default function NewCourse() {
     }
     setSaving(true);
 
-    let finalSkillId = skillId;
-    if (!finalSkillId && newSkill.trim()) {
-      const { data: s, error: e1 } = await supabase
-        .from("skills").insert({ name: newSkill.trim() }).select("id").maybeSingle();
-      if (e1 || !s) {
-        toast.error(e1?.message ?? "Could not create skill");
-        setSaving(false); return;
+    try {
+      let finalSkillId = skillId;
+      if (!finalSkillId && newSkill.trim()) {
+        const skillRes = await fetch("/api/skills", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: newSkill.trim() })
+        });
+        const skillData = await skillRes.json();
+        if (!skillRes.ok) throw new Error(skillData.error || "Could not create skill");
+        finalSkillId = skillData.id;
       }
-      finalSkillId = s.id;
-    }
-    if (!finalSkillId) {
-      toast.error("Pick a skill or add a new one");
-      setSaving(false); return;
-    }
+      
+      if (!finalSkillId) {
+        toast.error("Pick a skill or add a new one");
+        setSaving(false); 
+        return;
+      }
 
-    const { data: course, error } = await supabase.from("courses").insert({
-      title: title.trim(),
-      description: description.trim(),
-      credit_cost: credits,
-      skill_id: finalSkillId,
-      created_by: user.id,
-    }).select("id").maybeSingle();
+      const courseRes = await fetch("/api/courses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: title.trim(),
+          description: description.trim(),
+          credit_cost: credits,
+          skill_id: finalSkillId,
+          created_by: user.user_id,
+        })
+      });
+      
+      const courseData = await courseRes.json();
+      if (!courseRes.ok) throw new Error(courseData.error || "Could not create course");
 
-    setSaving(false);
-    if (error || !course) {
-      toast.error(error?.message ?? "Could not create course"); return;
+      toast.success("Course created! Now schedule a session.");
+      navigate(`/teach/course/${courseData.id}`);
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setSaving(false);
     }
-    toast.success("Course created! Now schedule a session.");
-    navigate(`/teach/course/${course.id}`);
   };
 
   return (

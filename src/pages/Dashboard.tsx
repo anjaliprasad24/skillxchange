@@ -25,18 +25,17 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: t }, { data: en }, { count: teachCount }] = await Promise.all([
-        supabase.from("credit_transactions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(8),
-        supabase
-          .from("enrollments")
-          .select("id, status, course_sessions(id, start_date, mode, courses(id, title, credit_cost, skills(name)))")
-          .eq("student_id", user.id)
-          .order("enroll_date", { ascending: false }),
-        supabase.from("course_sessions").select("id", { count: "exact", head: true }).eq("mentor_id", user.id),
-      ]);
-      if (t) setTxns(t as Txn[]);
-      if (en) setEnrollments(en as any);
-      setCounts({ teaching: teachCount ?? 0, enrolled: en?.length ?? 0 });
+      try {
+        const res = await fetch(`/api/users/${user.user_id}/dashboard`);
+        if (!res.ok) throw new Error("Failed to fetch dashboard data");
+        const data = await res.json();
+        
+        setTxns(data.txns);
+        setEnrollments(data.enrollments);
+        setCounts(data.counts);
+      } catch (err) {
+        console.error(err);
+      }
     })();
   }, [user]);
 
